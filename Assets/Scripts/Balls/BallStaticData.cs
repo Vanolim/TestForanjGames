@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
 [CreateAssetMenu(fileName = "BallData", menuName = "StaticData/NewBall")]
-public class BallData : ScriptableObject
+public class BallStaticData : ScriptableObject
 {
-    public Balls Type;
+    public BallType Type;
     public Ball Prefab;
 }

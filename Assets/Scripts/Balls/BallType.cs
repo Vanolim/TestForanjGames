@@ -1,4 +1,4 @@
-﻿public enum Balls
+﻿public enum BallType
 {
     Green,
     Yellow,

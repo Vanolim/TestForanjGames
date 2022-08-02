@@ -4,12 +4,14 @@
     public ISceneLoader SceneLoader { get; }
     public HubSceneFactory HubSceneFactory { get; }
     public IDisposeHandler DisposeHandler { get; }
+    public IAssetsProvider AssetsProvider { get; }
 
     public Services(ICoroutineRunner coroutineRunner)
     {
         CoroutineRunner = coroutineRunner;
         SceneLoader = new SceneLoader(CoroutineRunner);
-        HubSceneFactory = new HubSceneFactory(new AssetsProvider());
+        AssetsProvider = new AssetsProvider();
+        HubSceneFactory = new HubSceneFactory(AssetsProvider);
         DisposeHandler = new DisposeHandler();
     }
 }
