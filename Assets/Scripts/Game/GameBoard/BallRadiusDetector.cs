@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class BallRadiusDetector : IBallRadiusDetector
+public class BallRadiusDetector
 {
        private readonly IBallsStaticDataService _ballsStaticDataService;
        private const BallType BALL_TYPE = BallType.Blue;
