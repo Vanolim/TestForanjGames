@@ -65,6 +65,7 @@ public class BallMovement : MonoBehaviour
 
     public void MoveToPoint(Vector2 target)
     {
+        StopMoving();
         _speed = SPEED_FACTOR;
         _movingOnDots = false;
         _pointTo = target;

@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
-public class BallCollection
+public class BallCollection : IDisposable
 {
-    private BallCollisionHandler _ballCollisionDetector;
+    private readonly BallCollisionHandler _ballCollisionDetector;
     
     private readonly List<Ball> _activeBall = new List<Ball>();
     private readonly List<Ball> _ballsTopRow = new List<Ball>();
     private readonly List<Ball> _ballsThrow = new List<Ball>();
-
-    public event Action OnBallsFell;
 
     public BallCollection(BallCollisionHandler ballCollisionHandler)
     {
@@ -25,49 +22,61 @@ public class BallCollection
 
     public event Action OnBurstBallTopRow;
 
-    public void AddMatrixBall(Ball ball, bool isBallTopRow = false)
-    {
-        if (isBallTopRow)
-        {
-            ball.OnBurst += RemoveBallTopRow;
-            _ballsTopRow.Add(ball);
-        }
-        _activeBall.Add(ball);
-        StartCountTopRowBalls++;
-    }
-
-    public void AddThrowBalls(List<Ball> balls)
+    public void SetThrowBalls(List<Ball> balls)
     {
         foreach (var ball in balls)
         {
             _ballsThrow.Add(ball);
-            _activeBall.Add(ball);
+        }
+    }
+
+    public void AddMatrixBall(Ball ball, bool isBallTopRow = false)
+    {
+        if (isBallTopRow)
+        {
+            AddBallTopRaw(ball);
+            StartCountTopRowBalls++;
+        }
+        else
+        {
             ball.OnBurst += RemoveBall;
         }
+
+        _activeBall.Add(ball);
     }
 
-    public void TryReplaceBallTopRow(Ball possibleTopRowBall, Ball newBall)
+    private void TryReplaceBallTopRow(Ball possibleTopRowBall, Ball newBall)
     {
-        Ball ball = _ballsTopRow.Find(x => possibleTopRowBall);
-
-        if (ball)
-        {
-            newBall.OnBurst += RemoveBallTopRow;
-            _ballsTopRow.Add(newBall);
-        }
+        if (_ballsTopRow.Contains(possibleTopRowBall)) 
+            AddBallTopRaw(newBall);
     }
 
+    private void AddBallTopRaw(Ball ball)
+    {
+        ball.OnBurst += RemoveBallTopRow;
+        _ballsTopRow.Add(ball);
+    }
+
+    public Ball GetThrowBall()
+    {
+        Ball firstBall = _ballsThrow[0];
+        _ballsThrow.Remove(firstBall);
+        _activeBall.Add(firstBall);
+        firstBall.OnBurst += RemoveBall;
+        return firstBall;
+    }
+    
     private void RemoveBall(Ball ball)
     {
+        ball.OnBurst -= RemoveBall;
         _activeBall.Remove(ball);
     }
 
     private void RemoveBallTopRow(Ball ball)
     {
         ball.OnBurst -= RemoveBallTopRow;
-        _activeBall.Remove(ball);
         _ballsTopRow.Remove(ball);
-
+        _activeBall.Remove(ball);
         OnBurstBallTopRow?.Invoke();
     }
 
@@ -79,10 +88,6 @@ public class BallCollection
         }
     }
 
-    public Ball GetBallThrowBall()
-    {
-        Ball firstBall = _ballsThrow[0];
-        _ballsThrow.Remove(firstBall);
-        return firstBall;
-    }
+    public void Dispose() => 
+        _ballCollisionDetector.OnBallMayHaveTakenPlaceTopRowBall -= TryReplaceBallTopRow;
 }

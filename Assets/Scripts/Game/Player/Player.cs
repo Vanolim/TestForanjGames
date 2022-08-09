@@ -1,4 +1,4 @@
-﻿public class Player
+﻿public class Player : IDisposable
 {
     private PlayerLose _playerLose;
     private PlayerWin _playerWin;
@@ -7,5 +7,11 @@
     {
         _playerWin = new PlayerWin(gameBoard, gameSceneUI);
         _playerLose = new PlayerLose(gameBoard, gameSceneUI);
+    }
+
+    public void Dispose()
+    {
+        _playerLose.Dispose();
+        _playerWin.Dispose();
     }
 }

@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using UnityEngine;
 
-public class PlayerLose
+public class PlayerLose : IDisposable
 {
     private readonly GameBoard _gameBoard;
     private readonly GameSceneUI _gameSceneUI;
@@ -10,7 +10,6 @@ public class PlayerLose
     public PlayerLose(GameBoard gameBoard, GameSceneUI gameSceneUI)
     {
         _gameSceneUI = gameSceneUI;
-        
         _gameBoard = gameBoard;
         _gameBoard.OnBallsThrowOut += StarterLose;
     }
@@ -21,15 +20,13 @@ public class PlayerLose
         _gameSceneUI.ActivateLoseView();
     }
 
-    private void StarterLose()
-    {
-        _gameBoard.OnBallsThrowOut -= StarterLose;
-        ExpectationLoss(EXPECTATION_LOSE);
-    }
-    
+    private void StarterLose() => ExpectationLoss(EXPECTATION_LOSE);
+
     private async Task ExpectationLoss(int time)
     {
         await Task.Delay(time);
         Lose();
     }
+
+    public void Dispose() => _gameBoard.OnBallsThrowOut -= StarterLose;
 }

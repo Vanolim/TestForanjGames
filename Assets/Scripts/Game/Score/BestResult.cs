@@ -1,8 +1,8 @@
-﻿public class BestResult
+﻿public class BestResult : IDisposable
 {
     private readonly SavingAndLoadBestResult _savingAndLoadBestResult;
-    private Score _score;
-    private BestResultView _bestResultView;
+    private readonly Score _score;
+    private readonly BestResultView _bestResultView;
 
     public BestResult(Score score, BestResultView bestResultView)
     {
@@ -31,4 +31,6 @@
     }
     
     private int GetBestResult() => _savingAndLoadBestResult.TryGetBestResult();
+    
+    public void Dispose() => _score.OnScoreIncreased -= CheckBestResultUpdate;
 }

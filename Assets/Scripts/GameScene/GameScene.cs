@@ -10,7 +10,7 @@ public class GameScene : LogicScene
     private IGameSceneUpdate _gameSceneUpdate;
     private IBallFactory _ballFactory;
     private IInputService _inputService;
-    
+
     public GameScene(IHubSceneFactory hubFactory, IDisposeHandler disposeHandler) : base(hubFactory,
         disposeHandler)
     {
@@ -40,11 +40,11 @@ public class GameScene : LogicScene
         _gameBoard = new GameBoard(ballsPlacesData, _ballFactory, ballsStaticDataService, _inputService);
 
         _player = new Player(_gameBoard, _UIHandler.GameSceneUI);
-        _score = new Score(_gameBoard.BallCollisionHandler);
+        _score = new Score(_gameBoard.BallSameTypeDetectorHandler);
         _bestResult = new BestResult(_score, _UIHandler.GameSceneUI.BestResultView);
-        
-        _gameSceneUpdate.Register(_gameBoard);
-        _gameSceneUpdate.Register(_inputService);
+
+        RegisterUpdateble();
+        RegisterDisposable();
     }
 
     protected override IUIHandler InitHub(Camera camera)
@@ -60,8 +60,19 @@ public class GameScene : LogicScene
         return ui;
     }
 
-    private void FindGameSceneUpdate()
-    {
+    private void FindGameSceneUpdate() => 
         _gameSceneUpdate = GameObject.FindObjectOfType<GameSceneUpdate>();
+
+    private void RegisterUpdateble()
+    {
+        _gameSceneUpdate.Register(_inputService);
+        _gameSceneUpdate.Register(_gameBoard);
+    }
+    
+    private void RegisterDisposable()
+    {
+        DisposeHandler.Register(_player);
+        DisposeHandler.Register(_bestResult);
+        DisposeHandler.Register(_gameBoard);
     }
 }

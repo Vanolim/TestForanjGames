@@ -22,35 +22,42 @@ public class FeederBalls
             _prepareBall = null;
         }
         else
-            ball = _ballCollection.GetBallThrowBall();
-
-        if (_ballCollection.CurrentCountBallsThrow != 0)
         {
-            PrepareNextBall();
+            ball = _ballCollection.GetThrowBall();
         }
 
-        ball.BallView.DisableViewText();
-        ball.ActivateView();
-        ball.transform.parent = null;
-        MoveBallToTarget(ball, target);
+        TryPrepareNextBall();
+
+        PrepareBallForGet(target, ball);
         return ball;
     }
 
-    private void PrepareNextBall()
+    private void PrepareNextBallForSet()
     {
-        _prepareBall = _ballCollection.GetBallThrowBall();
-        _prepareBall.ActivateView();
+        _prepareBall = _ballCollection.GetThrowBall();
+        _prepareBall.BallView.ActivateSpriteRenderer();
         SetNumberRemainingBalls(_prepareBall);
     }
 
-    private void MoveBallToTarget(Ball ball, Vector2 target)
+    private void PrepareBallForGet(Vector2 target, Ball ball)
     {
-        ball.transform.position = target;
+        ball.BallView.DisableViewText();
+        ball.BallView.ActivateSpriteRenderer();
+        ball.transform.parent = null;
+        MoveBallToTarget(ball, target);
     }
+
+    private void MoveBallToTarget(Ball ball, Vector2 target) => ball.transform.position = target;
 
     private void SetNumberRemainingBalls(Ball ball)
     {
         ball.BallView.SetValueTest((_ballCollection.CurrentCountBallsThrow + 1).ToString());
         ball.BallView.EnableViewText();
+    }
+
+    private void TryPrepareNextBall()
+    {
+        if (_ballCollection.CurrentCountBallsThrow != 0) 
+            PrepareNextBallForSet();
     }
 }

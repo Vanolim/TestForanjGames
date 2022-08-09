@@ -2,11 +2,11 @@
 
 public class Score
 {
+    private readonly BallSameTypeDetectorHandler _ballSameTypeDetectorHandler;
     private int _value;
 
-    private const int NUMBER_SCORE_FOR_SAME_TYPE_COLIDER = 300;
-    private const int NUMBER_SCORE_FOR_BURST_ANOTHER_BALL = 200;
-
+    private const int NUMBER_SCORE_FOR_ONE_BALL = 10;
+    
     public event Action<int> OnScoreIncreased;
 
     public int Value
@@ -19,12 +19,15 @@ public class Score
         }
     }
 
-    public Score(BallCollisionHandler ballCollisionHandler)
+    public Score(BallSameTypeDetectorHandler ballSameTypeDetectorHandler)
     {
-        ballCollisionHandler.OnBallSameTypeCollided += AddScoreForSameTypeCollider;
-        ballCollisionHandler.OnBallBurstAnotherBall += AddScoreForBurstAnotherBall;
+        _ballSameTypeDetectorHandler = ballSameTypeDetectorHandler;
+        _ballSameTypeDetectorHandler.OnBallsSameTypeFound += AddScore;
     }
 
-    private void AddScoreForSameTypeCollider() => Value += NUMBER_SCORE_FOR_SAME_TYPE_COLIDER;
-    private void AddScoreForBurstAnotherBall() => Value += NUMBER_SCORE_FOR_BURST_ANOTHER_BALL;
+    private void AddScore()
+    {
+        int countFindBallsSameType = _ballSameTypeDetectorHandler.CountFindBallsSamyType;
+        Value += (int)Math.Pow(NUMBER_SCORE_FOR_ONE_BALL, countFindBallsSameType);
+    }
 }

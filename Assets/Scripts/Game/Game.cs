@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using Application = UnityEngine.Application;
+﻿using Application = UnityEngine.Application;
 
 public class Game
 {
@@ -63,9 +62,5 @@ public class Game
     private void SubscribeSceneChange(IChangingScene changingScene) => changingScene.OnSelectedNewScene += LoadScene;
     private void UnsubscribeSceneChange(IChangingScene changingScene) => changingScene.OnSelectedNewScene -= LoadScene;
 
-    private void ExitGame()
-    {
-        Debug.Log("Exit");
-        Application.Quit();
-    }
+    private void ExitGame() => Application.Quit();
 }

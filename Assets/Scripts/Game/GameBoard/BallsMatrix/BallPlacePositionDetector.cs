@@ -30,10 +30,8 @@ public class BallPlacePositionDetector
             _y -= _ballRadius * 2;
       }
 
-      private void SetXToStartPosition()
-      {
+      private void SetXToStartPosition() => 
             _x = -1 * ((Convert.ToSingle(_countColumnsMatrix) * (_ballRadius * 2) / 2) - _ballRadius);
-      }
 
       public Vector2 GetPosition()
       {

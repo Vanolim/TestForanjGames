@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class PlayerWin
+public class PlayerWin : IDisposable
 {
     private readonly GameBoard _gameBoard;
     private readonly GameSceneUI _gameSceneUI;
@@ -18,19 +18,19 @@ public class PlayerWin
     {
         _gameBoard.AllBallsFeel();
         _gameSceneUI.ActivateWinView();
-        _gameBoard.BallCollection.OnBurstBallTopRow -= Win;
     }
 
     private void CheckNumberRemainingBalls()
     {
-        BallCollection ballCollection = _gameBoard.BallCollection;
-        
-        float percentageBurstTopRowBalls =
-            (float)ballCollection.CurrentCountTopRowBalls / (float)ballCollection.StartCountTopRowBalls;
-        
-        Debug.Log(percentageBurstTopRowBalls);
-
-        if(percentageBurstTopRowBalls <= PERCENTAGE_BALLS_REAMINING_WIN)
+        if(GetCurrentPercentageBurstBallsTopRow() <= PERCENTAGE_BALLS_REAMINING_WIN)
             Win();
+    }
+    
+    private float GetCurrentPercentageBurstBallsTopRow() =>
+        (float)_gameBoard.BallCollection.CurrentCountTopRowBalls / (float)_gameBoard.BallCollection.StartCountTopRowBalls;
+
+    public void Dispose()
+    {
+        _gameBoard.BallCollection.OnBurstBallTopRow -= CheckNumberRemainingBalls;
     }
 }

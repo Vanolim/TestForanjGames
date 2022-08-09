@@ -17,16 +17,17 @@ public class Slingshot : IUpdateble
     public Vector2 TargetForNewBall => _view.Hook.transform.position;
     public bool IsBallNotSet => !_ball;
 
-    public Slingshot(IInputService inputService)
+    public Slingshot(IInputService inputService, SlingshotView _slingshotView)
     {
+        _view = _slingshotView;
         InitView();
+        
         _slingshotViewBall = new SlingshotViewBall(inputService, _view.BallZone.radius, _view.Hook.position);
         _shotTrajectory = new ShotTrajectory(_view.ShotView, _view.Border, _slingshotViewBall);
     }
 
     private void InitView()
     {
-        _view = GameObject.FindObjectOfType<SlingshotView>();
         _view.BandView.Init();
         _view.BandView.Activate();
     }
@@ -36,8 +37,8 @@ public class Slingshot : IUpdateble
         _ball = ball;
         _slingshotViewBall.SetBall(_ball);
 
-        _ball.OnPressShootButton += SetBallActive;
-        _ball.OnReleasedShootButton += Shoot;
+        _ball.BallView.OnPressShootButton += SetBallActive;
+        _ball.BallView.OnReleasedShootButton += Shoot;
     }
 
     public void UpdateState(float dt)
@@ -132,8 +133,8 @@ public class Slingshot : IUpdateble
 
     private void ResetBall()
     {
-        _ball.OnPressShootButton -= SetBallActive;
-        _ball.OnReleasedShootButton -= Shoot;
+        _ball.BallView.OnPressShootButton -= SetBallActive;
+        _ball.BallView.OnReleasedShootButton -= Shoot;
         _ball = null;
     }
     

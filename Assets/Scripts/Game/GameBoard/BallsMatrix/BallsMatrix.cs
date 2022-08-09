@@ -5,27 +5,32 @@ public class BallsMatrix
 {
     private readonly BallsPlacesData _ballsPlacesData;
     private readonly IBallFactory _ballFactory;
-    private readonly BallPlacePositionDetector _ballPlacePositionDetector;
-    private readonly Transform _мatrixCenter;
+    private BallPlacePositionDetector _ballPlacePositionDetector;
+    private readonly Transform _centerMatrix;
     private readonly BallCollection _ballCollection;
     private BallPlace[,] _ballsPlaces;
 
-    private float _ballRadius;
+    private readonly float _ballRadius;
 
     public BallsMatrix(BallsPlacesData ballsPlacesData, IBallFactory ballFactory, BallCollection ballCollection,
-        Transform мatrixCenter, float ballRadius)
+        Transform centerMatrix, float ballRadius)
     {
         _ballCollection = ballCollection;
         _ballFactory = ballFactory;
         _ballsPlacesData = ballsPlacesData;
-        _мatrixCenter = мatrixCenter;
+        _centerMatrix = centerMatrix;
         _ballRadius = ballRadius;
 
+        Init(ballsPlacesData);
+    }
+
+    private void Init(BallsPlacesData ballsPlacesData)
+    {
         int countRowsMatrix = ballsPlacesData.CountRowsMatrix;
         int countColumnsMatrix = ballsPlacesData.CountColumnsMatrix;
 
         _ballPlacePositionDetector = new BallPlacePositionDetector
-        (countRowsMatrix, countColumnsMatrix, _ballRadius);
+            (countRowsMatrix, countColumnsMatrix, _ballRadius);
 
         InitMatrix(countRowsMatrix, countColumnsMatrix);
     }
@@ -47,7 +52,7 @@ public class BallsMatrix
                 
                 if (BallPlaceIsNull(placeType) == false)
                 {
-                    Ball ball = _ballFactory.CreateBall(GetBallType(placeType), _мatrixCenter);
+                    Ball ball = _ballFactory.CreateBall(GetBallType(placeType), _centerMatrix);
                     newBallPlace.SetBall(ball);
                     ball.SetMatrixActivate();
                     _ballCollection.AddMatrixBall(ball, IsTopRaw(i));

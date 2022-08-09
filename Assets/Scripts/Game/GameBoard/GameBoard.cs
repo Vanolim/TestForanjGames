@@ -2,7 +2,7 @@
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-public class GameBoard : IUpdateble
+public class GameBoard : IUpdateble, IDisposable
 {
     private readonly BallsMatrix _ballsMatrix;
     private readonly Slingshot _slingshot;
@@ -10,41 +10,40 @@ public class GameBoard : IUpdateble
     private readonly BallCollisionHandler _ballCollisionHandler;
     private readonly BallCollection _ballCollection;
     private BallFiller _ballFiller;
+    public BallSameTypeDetectorHandler BallSameTypeDetectorHandler { get; }
+
+    private const int COUNT_THROW_BALLS = 30;
     public event Action OnBallsThrowOut;
     
-    public BallCollisionHandler BallCollisionHandler => _ballCollisionHandler;
     public BallCollection BallCollection => _ballCollection;
 
     public GameBoard(BallsPlacesData ballsPlacesData, IBallFactory ballFactory,
         IBallsStaticDataService staticDataService, IInputService inputService)
     {
-        Transform ballContainer = Object.FindObjectOfType<FeederBallsContainer>().GetTransform();
-        
+        Transform ballContainer = FindBallContainer();
+
         _ballCollisionHandler = new BallCollisionHandler();
 
         _ballCollection = new BallCollection(_ballCollisionHandler);
 
         _ballFiller = new BallFiller(ballFactory);
-        _ballCollection.AddThrowBalls(_ballFiller.GetBalls(10, ballContainer));
-
-
-        BallRadiusDetector ballRadiusDetector = new BallRadiusDetector(staticDataService);
+        _ballCollection.SetThrowBalls(_ballFiller.GetBalls(COUNT_THROW_BALLS, ballContainer));
 
         _ballsMatrix = new BallsMatrix(ballsPlacesData, ballFactory, _ballCollection, 
-            FindBallMatrixPosition(), ballRadiusDetector.GetRadius());
-
+            FindBallMatrixPosition(), new BallRadiusDetector(staticDataService).GetRadius());
 
         _feederBalls = new FeederBalls(_ballCollection);
+        
+        _slingshot = new Slingshot(inputService, FindSlingshotView());
+        _slingshot.OnBallFired += SetShotBallCollisionHandler;
 
-
-        _slingshot = new Slingshot(inputService);
-        _slingshot.OnBallFired += delegate(Ball ball) { _ballCollisionHandler.SetBall(ball); };
+        BallSameTypeDetectorHandler = new BallSameTypeDetectorHandler(_ballCollisionHandler);
     }
 
-    public void Start()
-    {
-        TryGiveBallSlingshot();
-    }
+    private Transform FindBallContainer() => Object.FindObjectOfType<FeederBallsContainer>().GetTransform();
+    private SlingshotView FindSlingshotView() => Object.FindObjectOfType<SlingshotView>();
+
+    public void Start() => TryGiveBallSlingshot();
 
     private Transform FindBallMatrixPosition() => 
         GameObject.FindObjectOfType<BallMatrixTransform>().GetTransform();
@@ -58,6 +57,8 @@ public class GameBoard : IUpdateble
         else
             TryGiveBallSlingshot();
     }
+
+    private void SetShotBallCollisionHandler(Ball ball) => _ballCollisionHandler.SetBall(ball);
 
     private void TryGiveBallSlingshot()
     {
@@ -75,5 +76,12 @@ public class GameBoard : IUpdateble
     {
         _slingshot.DeactivateViewBand();
         _ballCollection.FellBalls();
+    }
+
+    public void Dispose()
+    {
+        _ballCollection.Dispose();
+        _slingshot.OnBallFired -= SetShotBallCollisionHandler;
+        BallSameTypeDetectorHandler.Dispose();
     }
 }
