@@ -4,5 +4,5 @@
 public class BallStaticData : ScriptableObject
 {
     public BallType Type;
-    public Ball Prefab;
+    public Ball Ball;
 }

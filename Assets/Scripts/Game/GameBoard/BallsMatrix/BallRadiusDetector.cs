@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class BallRadiusDetector
+﻿public class BallRadiusDetector
 {
        private readonly IBallsStaticDataService _ballsStaticDataService;
        private const BallType BALL_TYPE = BallType.Blue;
@@ -10,8 +8,6 @@ public class BallRadiusDetector
               _ballsStaticDataService = ballStaticData;
        }
 
-       public float GetRadius()
-       {
-              return _ballsStaticDataService.ForBalls(BALL_TYPE).Prefab.SpriteRenderer.size.x / 2;
-       }
+       public float GetRadius() => 
+              _ballsStaticDataService.ForBalls(BALL_TYPE).Ball.SpriteRenderer.size.x / 2;
 }

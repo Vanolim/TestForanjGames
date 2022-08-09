@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Yellow
   m_EditorClassIdentifier: 
   Type: 1
-  Prefab: {fileID: 2575448034235937910, guid: 588dc0fea03745e43b72421eb014e484, type: 3}
+  Ball: {fileID: 3132403443060498763, guid: 6d890f57a22d98e4897d203dc3f68a96, type: 3}

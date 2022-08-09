@@ -3,79 +3,89 @@ using UnityEngine;
 
 public class ShotTrajectory
 {
-     private readonly ShotTrajectoryView _shotTrajectory;
+     private readonly ShotTrajectoryView _shotTrajectoryView;
      private readonly ParabolicTrajectory _parabolicTrajectory;
-     private List<Vector2> _trajectory;
+     private readonly SlingshotViewBall _slingshotViewBall;
+     private float _divergenceAdditionalTrajectoryAngle;
 
-     private const float MAXIMUM_LINE_TRAJECTORY_VIEW = 8f;
+     private const float MAXIMUM_LINE_TRAJECTORY_VIEW = 10f;
 
-     public IReadOnlyList<Vector2> Trajectory => _trajectory;
-
-     public ShotTrajectory(ShotTrajectoryView view, Border border)
+     public ShotTrajectory(ShotTrajectoryView view, Border border, SlingshotViewBall slingshotViewBall)
      {
-          _shotTrajectory = view;
+          _shotTrajectoryView = view;
+          _slingshotViewBall = slingshotViewBall;
           _parabolicTrajectory = new ParabolicTrajectory(border);
      }
 
-     public void SetTrajectory(Vector2 ballPosition, Vector2 direction, float force)
-     {
-          _trajectory = _parabolicTrajectory.GetTrajectory(ballPosition, direction, force, MAXIMUM_LINE_TRAJECTORY_VIEW);
+     public List<Vector2> GetTrajectory(float force) => 
+          _parabolicTrajectory.GetTrajectory(_slingshotViewBall.GetBallPosition, _slingshotViewBall.GetBallDirection(), force);
+     
+     public List<Vector2> GetTrajectory(float force, float maxLength) =>
+          _parabolicTrajectory.GetTrajectory(_slingshotViewBall.GetBallPosition, _slingshotViewBall.GetBallDirection(), force, maxLength);
+     
+     public List<Vector2> GetTrajectory(Vector2 direction, float force, float maxLength) =>
+          _parabolicTrajectory.GetTrajectory(_slingshotViewBall.GetBallPosition, direction, force, maxLength);
 
-          if (_parabolicTrajectory.LineLength >= MAXIMUM_LINE_TRAJECTORY_VIEW)
-          {
-               int numberLastPointConsideredLineLenght = _parabolicTrajectory.NumberLastPointConsideredLineLenght;
-               var trajectoryView = _trajectory.GetRange(0, numberLastPointConsideredLineLenght);
-               SetTrajectoryView(trajectoryView, numberLastPointConsideredLineLenght);
-               return;
-          }
-          SetTrajectoryView(_trajectory, _trajectory.Count);
+     public List<Vector2> GetRandomAngleTrajectory(float force)
+     {
+          float randomAngle = Random.Range(_divergenceAdditionalTrajectoryAngle * -1,
+               _divergenceAdditionalTrajectoryAngle);
+          
+          return _parabolicTrajectory.GetTrajectory(_slingshotViewBall.GetBallPosition,
+               _slingshotViewBall.GetBallDirectionAngle(randomAngle), force);
      }
 
-     public void SetAdditionalTrajectory(Vector2 ballPosition, Vector2 directionLeft, Vector2 directionRight, float force)
+     public void SetMainTrajectoryView(float force)
      {
-          Vector2 vec1;
-          Vector2 vec2;
-          _trajectory = _parabolicTrajectory.GetTrajectory(ballPosition, directionLeft, force, MAXIMUM_LINE_TRAJECTORY_VIEW);
-          vec1 = _trajectory[0];
-          if (_parabolicTrajectory.LineLength >= MAXIMUM_LINE_TRAJECTORY_VIEW)
-          {
-               _trajectory = _trajectory.GetRange(0, _parabolicTrajectory.NumberLastPointConsideredLineLenght);
-               _shotTrajectory.SetAdditionalLeftTrajectory(_trajectory, _parabolicTrajectory.NumberLastPointConsideredLineLenght);
-          }
-          else
-          {
-               _shotTrajectory.SetAdditionalLeftTrajectory(_trajectory, _trajectory.Count);
-          }
-
-          _trajectory = _parabolicTrajectory.GetTrajectory(ballPosition, directionRight, force, MAXIMUM_LINE_TRAJECTORY_VIEW);
-          vec2 = _trajectory[0];
-          if (_parabolicTrajectory.LineLength >= MAXIMUM_LINE_TRAJECTORY_VIEW)
-          {
-               _trajectory = _trajectory.GetRange(0, _parabolicTrajectory.NumberLastPointConsideredLineLenght);
-               _shotTrajectory.SetAdditionalRightTrajectory(_trajectory, _parabolicTrajectory.NumberLastPointConsideredLineLenght);
-          }
-          else
-          {
-               _shotTrajectory.SetAdditionalRightTrajectory(_trajectory, _trajectory.Count);
-          }
+          List<Vector2> trajectory = GetTrajectory(force, MAXIMUM_LINE_TRAJECTORY_VIEW);
+          _shotTrajectoryView.SetTrajectoryMainLineRenderer(trajectory, trajectory.Count);
      }
 
-     public void SeemView()
+     public void SetAdditionalTrajectoryView(float force)
      {
-          if(_shotTrajectory.MainIsHide)
-               _shotTrajectory.SeemMain();
+          List<Vector2> trajectory;
+          trajectory = GetTrajectory(GetDirectionLeftAdditionalTrajectory(), force, MAXIMUM_LINE_TRAJECTORY_VIEW);
+          _shotTrajectoryView.SetAdditionalLeftTrajectory(trajectory, trajectory.Count);
+
+          trajectory = GetTrajectory(GetDirectionRightAdditionalTrajectory(), force, MAXIMUM_LINE_TRAJECTORY_VIEW);
+          _shotTrajectoryView.SetAdditionalRightTrajectory(trajectory, trajectory.Count);
      }
+     
+     private Vector2 GetDirectionLeftAdditionalTrajectory() => 
+          _slingshotViewBall.GetBallDirectionAngle(_divergenceAdditionalTrajectoryAngle);
+     
+     private Vector2 GetDirectionRightAdditionalTrajectory() => 
+          _slingshotViewBall.GetBallDirectionAngle(_divergenceAdditionalTrajectoryAngle * -1);
 
-     public void HideView() => _shotTrajectory.HideMain();
-
-     private void SetTrajectoryView(List<Vector2> trajectory, int trajectoryCountDataPoint) => 
-          _shotTrajectory.SetTrajectoryMainLineRenderer(trajectory, trajectoryCountDataPoint);
+     public void SeemMainTrajectoryView()
+     {
+          if(_shotTrajectoryView.MainIsHide)
+               _shotTrajectoryView.SeemMain();
+     }
 
      public void SeemAdditionalTrajectoryView()
      {
-          if(_shotTrajectory.AdditionalIsHide)
-               _shotTrajectory.SeemAdditional();
+          if(_shotTrajectoryView.AdditionalIsHide)
+               _shotTrajectoryView.SeemAdditional();
      }
 
-     public void HideAdditionalTrajectoryView() => _shotTrajectory.HideAdditional();
+     public void HideView()
+     {
+          HideMainTrajectoryView();
+          HideAdditionalTrajectoryView();
+     }
+
+     public void HideAdditionalTrajectoryView() => _shotTrajectoryView.HideAdditional();
+     public void HideMainTrajectoryView() => _shotTrajectoryView.HideMain();
+     
+     public void IncreaseDivergenceAngle(float dt)
+     {
+          int maxDivergenceAngle = 15;
+          float divergenceRate = 10f;
+        
+          if (_divergenceAdditionalTrajectoryAngle < maxDivergenceAngle)
+               _divergenceAdditionalTrajectoryAngle += dt * divergenceRate;
+     }
+
+     public void ResetIncreaseDivergenceAngle() => _divergenceAdditionalTrajectoryAngle = 0;
 }

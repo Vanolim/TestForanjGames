@@ -4,6 +4,9 @@ public class GameScene : LogicScene
 {
     private GameSceneUIHandler _UIHandler;
     private GameBoard _gameBoard;
+    private Player _player;
+    private Score _score;
+    private BestResult _bestResult;
     private IGameSceneUpdate _gameSceneUpdate;
     private IBallFactory _ballFactory;
     private IInputService _inputService;
@@ -17,18 +20,28 @@ public class GameScene : LogicScene
     public override void Start()
     {
         base.Start();
+        Init();
+        _gameBoard.Start();
+    }
+
+    private void Init()
+    {
         FindGameSceneUpdate();
         
         BallsPlacesData ballsPlacesData = new BallsPlacesData();
         
         IBallsStaticDataService ballsStaticDataService = new BallsStaticDataService();
         ballsStaticDataService.LoadBalls();
-
+    
         _inputService = new InputService();
         _inputService.Init();
-
+    
         _ballFactory = new BallFactory(ballsStaticDataService);
         _gameBoard = new GameBoard(ballsPlacesData, _ballFactory, ballsStaticDataService, _inputService);
+
+        _player = new Player(_gameBoard, _UIHandler.GameSceneUI);
+        _score = new Score(_gameBoard.BallCollisionHandler);
+        _bestResult = new BestResult(_score, _UIHandler.GameSceneUI.BestResultView);
         
         _gameSceneUpdate.Register(_gameBoard);
         _gameSceneUpdate.Register(_inputService);

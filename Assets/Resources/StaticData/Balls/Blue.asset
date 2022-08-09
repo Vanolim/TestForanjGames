@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Blue
   m_EditorClassIdentifier: 
   Type: 2
-  Prefab: {fileID: 5779200271223452296, guid: 1dce038d59a30fe4c92f672b2da84647, type: 3}
+  Ball: {fileID: 3132403443060498763, guid: e880710b27179294291c3ff18ed66228, type: 3}

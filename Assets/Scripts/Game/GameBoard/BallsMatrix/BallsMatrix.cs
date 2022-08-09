@@ -5,14 +5,17 @@ public class BallsMatrix
 {
     private readonly BallsPlacesData _ballsPlacesData;
     private readonly IBallFactory _ballFactory;
-    private  BallPlacePositionDetector _ballPlacePositionDetector;
+    private readonly BallPlacePositionDetector _ballPlacePositionDetector;
     private readonly Transform _мatrixCenter;
+    private readonly BallCollection _ballCollection;
     private BallPlace[,] _ballsPlaces;
 
     private float _ballRadius;
 
-    public BallsMatrix(BallsPlacesData ballsPlacesData, IBallFactory ballFactory, Transform мatrixCenter, float ballRadius)
+    public BallsMatrix(BallsPlacesData ballsPlacesData, IBallFactory ballFactory, BallCollection ballCollection,
+        Transform мatrixCenter, float ballRadius)
     {
+        _ballCollection = ballCollection;
         _ballFactory = ballFactory;
         _ballsPlacesData = ballsPlacesData;
         _мatrixCenter = мatrixCenter;
@@ -46,13 +49,17 @@ public class BallsMatrix
                 {
                     Ball ball = _ballFactory.CreateBall(GetBallType(placeType), _мatrixCenter);
                     newBallPlace.SetBall(ball);
+                    ball.SetMatrixActivate();
+                    _ballCollection.AddMatrixBall(ball, IsTopRaw(i));
                 }
             }
-
+            
             _ballPlacePositionDetector.GetToNextRaw();
         }
     }
 
+    private bool IsTopRaw(int i) => i == 0;
+    
     private bool BallPlaceIsNull(PlaceType placeType) => placeType == PlaceType.None;
 
     private BallType GetBallType(PlaceType placeType)

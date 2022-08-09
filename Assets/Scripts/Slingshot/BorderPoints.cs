@@ -64,11 +64,7 @@ public struct BorderPoints
 
     public bool IsTargetInDown(Vector2 targetPosition)
     {
-        Vector2 targetDir = targetPosition - (Vector2)_border.Box.transform.position;
-
-        float angle = Mathf.Atan2(targetDir.y,  targetDir.x) * Mathf.Rad2Deg;
-        if (angle < 0f) 
-            angle += 360f;
+        float angle = GetAngle(targetPosition);
 
         return angle >= _angleDownLeftPointBorder && angle <= _angleDownRightPointBorder;
     }

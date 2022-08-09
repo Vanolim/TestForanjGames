@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Band : MonoBehaviour
+public class BandView : MonoBehaviour
 {
     [SerializeField] private Transform _leftArchor;
     [SerializeField] private Transform _rightArchor;

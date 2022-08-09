@@ -1,21 +1,14 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class ShotTrajectoryView : MonoBehaviour
 {
     [SerializeField] private LineRenderer _main;
-    [SerializeField] private LineRenderer _leftAdditional;
-    [SerializeField] private LineRenderer _rightAdditional;
+    [SerializeField] private LineRenderer _left;
+    [SerializeField] private LineRenderer _right;
 
     public bool MainIsHide { get; private set; }
     public bool AdditionalIsHide { get; private set; }
-
-    public void SetCountPointAdditionalRenderers(int count)
-    {
-        _leftAdditional.positionCount = count;
-        _rightAdditional.positionCount = count;
-    }
 
     public void SetTrajectoryMainLineRenderer(List<Vector2> positionPoints, int countPoint)
     {
@@ -28,20 +21,19 @@ public class ShotTrajectoryView : MonoBehaviour
 
     public void SetAdditionalLeftTrajectory(List<Vector2> positionPointsLeftRenderer, int countPoint)
     {
-        _leftAdditional.positionCount = countPoint;
-        for (int i = 0; i < _leftAdditional.positionCount; i++)
+        _left.positionCount = countPoint;
+        for (int i = 0; i < _left.positionCount; i++)
         {
-            _leftAdditional.SetPosition(i, positionPointsLeftRenderer[i]);
+            _left.SetPosition(i, positionPointsLeftRenderer[i]);
         }
     }
     
     public void SetAdditionalRightTrajectory(List<Vector2> positionPointsRightRenderer, int countPoint)
     {
-        Debug.Log($"{positionPointsRightRenderer.Count} ___ {countPoint}");
-        _rightAdditional.positionCount = countPoint;
-        for (int i = 0; i < _rightAdditional.positionCount; i++)
+        _right.positionCount = countPoint;
+        for (int i = 0; i < _right.positionCount; i++)
         {
-            _rightAdditional.SetPosition(i, positionPointsRightRenderer[i]);
+            _right.SetPosition(i, positionPointsRightRenderer[i]);
         }
     }
 
@@ -59,15 +51,15 @@ public class ShotTrajectoryView : MonoBehaviour
 
     public void SeemAdditional()
     {
-        _leftAdditional.enabled = true;
-        _rightAdditional.enabled = true;
+        _left.enabled = true;
+        _right.enabled = true;
         AdditionalIsHide = false;
     }
     
     public void HideAdditional()
     {
-        _leftAdditional.enabled = false;
-        _rightAdditional.enabled = false;
+        _left.enabled = false;
+        _right.enabled = false;
         AdditionalIsHide = true;
     }
 }

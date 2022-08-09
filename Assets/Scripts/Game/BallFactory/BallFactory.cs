@@ -1,5 +1,4 @@
-﻿using System.IO;
-using UnityEngine;
+﻿using UnityEngine;
 using Object = UnityEngine.Object;
 
 public class BallFactory : IBallFactory
@@ -13,8 +12,9 @@ public class BallFactory : IBallFactory
 
     public Ball CreateBall(BallType ballType, Transform container)
     {
-        BallStaticData enemyData = _ballStaticData.ForBalls(ballType);
-        Ball ball = Object.Instantiate(enemyData.Prefab, container, false);
+        BallStaticData ballData = _ballStaticData.ForBalls(ballType);
+        Ball ball = Object.Instantiate(ballData.Ball, container, false);
+        ball.InitBallType(ballType);
         return ball;
     }
 }
