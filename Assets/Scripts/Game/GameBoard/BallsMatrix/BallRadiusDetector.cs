@@ -1,13 +1,13 @@
 ﻿public class BallRadiusDetector
 {
-       private readonly IBallsStaticDataService _ballsStaticDataService;
+       private readonly IStaticDataService _staticDataService;
        private const BallType BALL_TYPE_FOR_SET_VALUE = BallType.Blue;
        
-       public BallRadiusDetector(IBallsStaticDataService ballStaticData)
+       public BallRadiusDetector(IStaticDataService staticData)
        {
-              _ballsStaticDataService = ballStaticData;
+              _staticDataService = staticData;
        }
 
        public float GetRadius() =>
-              _ballsStaticDataService.ForBalls(BALL_TYPE_FOR_SET_VALUE).Ball.BallView.GetRadiusSprite();
+              _staticDataService.ForBalls(BALL_TYPE_FOR_SET_VALUE).Ball.BallView.GetRadiusSprite();
 }

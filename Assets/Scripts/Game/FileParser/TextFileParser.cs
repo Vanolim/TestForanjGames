@@ -1,25 +1,43 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using UnityEngine;
 
 public class TextFileParser
 {
+    private LoadTextData _loadTextData;
+
+    public TextFileParser(LoadTextData loadTextData)
+    {
+        _loadTextData = loadTextData;
+    }
+    
     public char[,] GetFileData()
     {
         List<List<char>> data = new List<List<char>>();
+
+
+        var split_arr = SplitFileIntoLines();
         
-        foreach (string line in File.ReadLines(AssetPath.FileData))
+        foreach (string line in split_arr)
         {
             List<char> charsLine = new List<char>();
-
+        
             for (int i = 0; i < line.Length; i++)
             {
-                charsLine.Add(line[i]);
+                if(line[i] != ';')
+                    charsLine.Add(line[i]);
             }
             
             data.Add(charsLine);
         }
-
+        
         return FormArrayData(data);
+    }
+
+    private string[] SplitFileIntoLines()
+    {
+        string[] split_arr = _loadTextData.LevelTextData.text.Split(';');
+        return split_arr;
     }
 
     private char[,] FormArrayData( List<List<char>> data)

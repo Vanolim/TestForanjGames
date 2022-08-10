@@ -1,4 +1,5 @@
-﻿using Application = UnityEngine.Application;
+﻿using UnityEngine;
+using Application = UnityEngine.Application;
 
 public class Game
 {

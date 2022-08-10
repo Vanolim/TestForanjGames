@@ -10,7 +10,7 @@ public class GameSceneUI : SceneContextUI
     [SerializeField] private Button _main;
 
     public BestResultView BestResultView => _bestResultView;
-    
+
     public event Action OnChosenMain;
 
     private void OnEnable() => _main.onClick.AddListener(delegate { OnChosenMain?.Invoke(); });

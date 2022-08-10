@@ -12,13 +12,13 @@ public class GameBoard : IUpdateble, IDisposable
     private BallFiller _ballFiller;
     public BallSameTypeDetectorHandler BallSameTypeDetectorHandler { get; }
 
-    private const int COUNT_THROW_BALLS = 30;
+    private const int COUNT_THROW_BALLS = 20;
     public event Action OnBallsThrowOut;
     
     public BallCollection BallCollection => _ballCollection;
 
     public GameBoard(BallsPlacesData ballsPlacesData, IBallFactory ballFactory,
-        IBallsStaticDataService staticDataService, IInputService inputService)
+        IStaticDataService staticDataService, IInputService inputService)
     {
         Transform ballContainer = FindBallContainer();
 

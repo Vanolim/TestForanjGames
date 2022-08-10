@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class InputService : IInputService, IUpdateble
+public class InputService : IInputService
 {
     private Camera _camera;
     

@@ -1,5 +1,6 @@
 ﻿public class BallsPlacesData
 {
+    
     private readonly char[,] _fileData;
     private PlaceType[,] _placesData;
     private int _countRowsMatrix;
@@ -9,9 +10,9 @@
     public int CountRowsMatrix => _countRowsMatrix;
     public int CountColumnsMatrix => _countColumnsMatrix;
 
-    public BallsPlacesData()
+    public BallsPlacesData(IStaticDataService staticDataService)
     {
-        TextFileParser textFileParser = new TextFileParser();
+        TextFileParser textFileParser = new TextFileParser(staticDataService.ForLoadTextData());
         _fileData = textFileParser.GetFileData();
 
         InitializeData();

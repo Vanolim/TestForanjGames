@@ -27,17 +27,19 @@ public class GameScene : LogicScene
     private void Init()
     {
         FindGameSceneUpdate();
+
+
+        IStaticDataService staticDataService = new StaticDataService();
+        staticDataService.LoadBalls();
+        staticDataService.LoadTextData();
+
+        BallsPlacesData ballsPlacesData = new BallsPlacesData(staticDataService);
         
-        BallsPlacesData ballsPlacesData = new BallsPlacesData();
-        
-        IBallsStaticDataService ballsStaticDataService = new BallsStaticDataService();
-        ballsStaticDataService.LoadBalls();
-    
         _inputService = new InputService();
         _inputService.Init();
     
-        _ballFactory = new BallFactory(ballsStaticDataService);
-        _gameBoard = new GameBoard(ballsPlacesData, _ballFactory, ballsStaticDataService, _inputService);
+        _ballFactory = new BallFactory(staticDataService);
+        _gameBoard = new GameBoard(ballsPlacesData, _ballFactory, staticDataService, _inputService);
 
         _player = new Player(_gameBoard, _UIHandler.GameSceneUI);
         _score = new Score(_gameBoard.BallSameTypeDetectorHandler);

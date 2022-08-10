@@ -4,8 +4,6 @@ using UnityEngine;
 public class AboutGameScene : LogicScene
 {
     private AboutGameUIHandler _UIHandler;
-    
-    public event Action OnSelectedExitApplication;
 
     public AboutGameScene(IHubSceneFactory hubFactory, IDisposeHandler disposeHandler) : base(hubFactory, disposeHandler)
     {

@@ -12,7 +12,7 @@ public class BallMovement : MonoBehaviour
     private float _speed;
     private bool _movingOnDots;
 
-    private const int SPEED_FACTOR = 15;
+    private const int SPEED_FACTOR = 50;
 
     public event Action OnReachedEndPoint; 
 

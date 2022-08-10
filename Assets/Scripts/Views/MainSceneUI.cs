@@ -18,6 +18,8 @@ public class MainSceneUI : SceneContextUI
         _newGame.onClick.AddListener(delegate { OnChosenNewGame?.Invoke();});
         _aboutGame.onClick.AddListener(delegate { OnChosenAboutGame?.Invoke();});
         _exit.onClick.AddListener(delegate { _closeView.ActivateView(); });
+
+        _closeView.OnExit += Exit;
     }
 
     private void Exit()
